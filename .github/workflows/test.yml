@@ -1,13 +1,13 @@
 # This workflow will install Python dependencies, run test and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python package
+name: Test
 
 on:
   push:
-    branches: [ main]
+    branches: [ master ]
   pull_request:
-    branches: [ main]
+    branches: [ master ]
 
 jobs:
   build:
@@ -39,7 +39,7 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run Test
-      run: pytest --doctest-modules --cov-report=xml --cov=cca_zoo ./cca_zoo/test/
+      run: pytest --doctest-modules --cov-report=xml --cov=skprox ./skprox/test/
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v1
       with:
