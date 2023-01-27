@@ -1,3 +1,9 @@
+[![codecov](https://codecov.io/gh/jameschapman19/scikit-prox/branch/main/graph/badge.svg?token=JHG9VUB0L8)](https://codecov.io/gh/jameschapman19/scikit-prox)
+![Build Status](https://github.com/jameschapman19/scikit-prox/actions/workflows/test.yml/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/scikit-prox/badge/?version=latest)](https://scikit-prox.readthedocs.io/en/latest/?badge=latest)
+[![version](https://img.shields.io/pypi/v/scikit-prox)](https://pypi.org/project/scikit-prox/)
+[![downloads](https://img.shields.io/pypi/dm/scikit-prox)](https://pypi.org/project/scikit-prox/)
+
 # Scikit-Prox
 The goal of this project is to implement a set of algorithms for solving the following optimization problem:
 minimize f(x) + g(x) where f is a smooth function and g is a proximal operator. The proximal operator of a function g is defined as:

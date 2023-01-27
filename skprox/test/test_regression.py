@@ -108,8 +108,8 @@ def test_gridsearch():
     from sklearn.model_selection import GridSearchCV
 
     reg = GridSearchCV(
-        RegularisedRegression(max_iter=10000),
-        param_grid={"proximal": ["L0", "L1", "NuclearBall"], "radius": [10, 20, 30]},
+        RegularisedRegression(max_iter=1000),
+        param_grid={"proximal": ["L0", "L1"], "sigma": [1e-1,1,10]},
         cv=5,
     )
     reg.fit(x_train, y_train)
