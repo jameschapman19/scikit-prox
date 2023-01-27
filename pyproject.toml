@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "scikit-prox"
+version = "0.1.0"
+description = ""
+authors = ["jameschapman19 <james.chapman.19@ucl.ac.uk>"]
+readme = "README.md"
+packages = [{include = "scikit_prox"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+scikit-learn = "^1.2.1"
+scikit-image = "^0.19.3"
+pyproximal = "^0.5.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
