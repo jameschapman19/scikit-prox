@@ -3,7 +3,9 @@ from functools import partial
 import numpy as np
 from pyproximal import (
     L0,
+    L0Ball,
     L1,
+    L1Ball,
     L2,
     L21,
     L21_plus_L1,
@@ -78,7 +80,9 @@ class TV:
 PROXIMAL_OPERATORS = {
     "Dummy": Dummy,
     "L0": L0,
+    "L0Ball": L0Ball,
     "L1": L1,
+    "L1Ball": L1Ball,
     "L2": L2,
     "L21": L21,
     "L21_plus_L1": L21_plus_L1,
@@ -94,7 +98,9 @@ PROXIMAL_OPERATORS = {
 PROXIMAL_PARAMS = {
     "Dummy": (),
     "L0": frozenset(["sigma"]),
+    "L0Ball": frozenset(["radius"]),
     "L1": frozenset(["sigma"]),
+    "L1Ball": frozenset(["sigma","g"]),
     "L2": frozenset(["sigma"]),
     "L21": frozenset(["ndim", "sigma"]),
     "L21_plus_L1": frozenset(["sigma", "rho"]),
