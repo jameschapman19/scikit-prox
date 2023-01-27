@@ -70,6 +70,7 @@ class RegularisedRegression(LinearRegression):
         self.radius = radius
         self.gamma = gamma
         self.delta = delta
+        self.g=g
 
     def fit(self, X, y, sample_weight=None):
         """

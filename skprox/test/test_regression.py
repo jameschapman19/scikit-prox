@@ -89,3 +89,33 @@ def test_nuclearball_regression():
 
     # test nuclear has the same number of coefficients as the number of features
     assert reg.coef_.shape[1] == 200
+
+def test_gridsearch():
+    from sklearn.datasets import make_regression
+    from sklearn.model_selection import train_test_split
+
+    X, y, t = make_regression(
+        n_samples=100,
+        n_features=200,
+        n_informative=10,
+        n_targets=5,
+        random_state=1,
+        coef=True,
+    )
+    x_train, x_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=0
+    )
+    from sklearn.model_selection import GridSearchCV
+
+    reg = GridSearchCV(
+        RegularisedRegression(max_iter=10000),
+        param_grid={"proximal": ["L0", "L1", "NuclearBall"], "radius": [10, 20, 30]},
+        cv=5,
+    )
+    reg.fit(x_train, y_train)
+
+    # test gridsearch has the same number of coefficients as the number of targets
+    assert reg.best_estimator_.coef_.shape[0] == 5
+
+    # test gridsearch has the same number of coefficients as the number of features
+    assert reg.best_estimator_.coef_.shape[1] == 200
