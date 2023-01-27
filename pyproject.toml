@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "scikit-prox"
 version = "0.1.0"
-description = ""
+description = "A package for solving regularised optimisation problems in a scikit-learn style."
 authors = ["jameschapman19 <james.chapman.19@ucl.ac.uk>"]
 readme = "README.md"
 packages = [{include = "scikit_prox"}]
@@ -12,6 +12,8 @@ scikit-learn = "^1.2.1"
 scikit-image = "^0.19.3"
 pyproximal = "^0.5.0"
 
+[tool.poetry.dev-dependencies]
+black = "^22.12.0"
 
 [build-system]
 requires = ["poetry-core"]

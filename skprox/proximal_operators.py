@@ -1,8 +1,21 @@
-import numpy as np
 from functools import partial
-from skimage.restoration import denoise_tv_chambolle, denoise_tv_bregman
-from pyproximal import L0, L1, L2, L21, L21_plus_L1, Nuclear, NuclearBall, Log, Log1, Euclidean, EuclideanBall
+
+import numpy as np
+from pyproximal import (
+    L0,
+    L1,
+    L2,
+    L21,
+    L21_plus_L1,
+    Nuclear,
+    NuclearBall,
+    Log,
+    Log1,
+    Euclidean,
+    EuclideanBall,
+)
 from pyproximal.ProxOperator import _check_tau
+from skimage.restoration import denoise_tv_chambolle, denoise_tv_bregman
 
 
 class Dummy:
@@ -25,8 +38,7 @@ class TV:
         self.dims = dims
 
     def _increment_count(func):
-        """Increment counter
-        """
+        """Increment counter"""
 
         def wrapped(self, *args, **kwargs):
             self.count += 1
@@ -39,17 +51,23 @@ class TV:
     def prox(self, x, tau):
         x = x.reshape(self.dims)
         if self.isotropic:
-            return denoise_tv_chambolle(x, weight=tau * self.sigma / 2, max_num_iter=self.max_iter)
+            return denoise_tv_chambolle(
+                x, weight=tau * self.sigma / 2, max_num_iter=self.max_iter
+            )
         else:
-            return denoise_tv_bregman(x, weight=tau * self.sigma / 2, isotropic=self.isotropic,
-                                      max_num_iter=self.max_iter)
+            return denoise_tv_bregman(
+                x,
+                weight=tau * self.sigma / 2,
+                isotropic=self.isotropic,
+                max_num_iter=self.max_iter,
+            )
 
     def __call__(self, x):
         m = np.zeros_like(x)
         for d in range(x.ndim):
             diff = np.gradient(x, axis=d)
             if self.isotropic:
-                m += diff ** 2
+                m += diff**2
             else:
                 m += np.abs(diff)
         if not self.isotropic:
@@ -58,34 +76,34 @@ class TV:
 
 
 PROXIMAL_OPERATORS = {
-    'Dummy': Dummy,
-    'L0': L0,
-    'L1': L1,
-    'L2': L2,
-    'L21': L21,
-    'L21_plus_L1': L21_plus_L1,
-    'TV': TV,
-    'Nuclear': Nuclear,
-    'NuclearBall': NuclearBall,
-    'Log': Log,
-    'Log1': Log1,
-    'Euclidean': Euclidean,
-    'EuclideanBall': EuclideanBall
+    "Dummy": Dummy,
+    "L0": L0,
+    "L1": L1,
+    "L2": L2,
+    "L21": L21,
+    "L21_plus_L1": L21_plus_L1,
+    "TV": TV,
+    "Nuclear": Nuclear,
+    "NuclearBall": NuclearBall,
+    "Log": Log,
+    "Log1": Log1,
+    "Euclidean": Euclidean,
+    "EuclideanBall": EuclideanBall,
 }
 
 PROXIMAL_PARAMS = {
-    'Dummy': (),
-    'L0': frozenset(["sigma"]),
-    'L1': frozenset(["sigma"]),
-    'L2': frozenset(["sigma"]),
-    'L21': frozenset(["ndim", "sigma"]),
-    'L21_plus_L1': frozenset(["sigma", "rho"]),
-    'TV': frozenset(["sigma", "isotropic", "dims"]),
-    'Nuclear': frozenset(["dim", "sigma"]),
-    'NuclearBall': frozenset(["dims", "radius"]),
-    'Log': frozenset(["sigma", "gamma"]),
-    'Log1': frozenset(["sigma", "delta"]),
-    'Euclidean': frozenset(["sigma"]),
+    "Dummy": (),
+    "L0": frozenset(["sigma"]),
+    "L1": frozenset(["sigma"]),
+    "L2": frozenset(["sigma"]),
+    "L21": frozenset(["ndim", "sigma"]),
+    "L21_plus_L1": frozenset(["sigma", "rho"]),
+    "TV": frozenset(["sigma", "isotropic", "dims"]),
+    "Nuclear": frozenset(["dim", "sigma"]),
+    "NuclearBall": frozenset(["dims", "radius"]),
+    "Log": frozenset(["sigma", "gamma"]),
+    "Log1": frozenset(["sigma", "delta"]),
+    "Euclidean": frozenset(["sigma"]),
 }
 
 
