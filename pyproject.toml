@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "A package for solving regularised optimisation problems in a scikit-learn style."
 authors = ["jameschapman19 <james.chapman.19@ucl.ac.uk>"]
 readme = "README.md"
-packages = [{include = "scikit_prox"}]
+packages = [{include = "skprox"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
