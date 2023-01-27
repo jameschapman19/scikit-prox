@@ -19,7 +19,7 @@ class RegularisedRegression(LinearRegression):
         delta=1e-10,
         positive=False,
         max_iter=1000,
-        tol=1e-4,
+        tol=1e-9,
         learning_rate=0.01,
             g=None,
     ):
@@ -137,6 +137,8 @@ class RegularisedRegression(LinearRegression):
             coef_ = self.proximal.prox(
                 (coef_.flatten() - self.learning_rate * grad.flatten()), self.sigma
             ).reshape(coef_.shape)
+            if np.linalg.norm(grad) < self.tol:
+                break
         return coef_
 
     def _get_proximal(self):
