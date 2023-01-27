@@ -54,3 +54,13 @@ model = RegularisedRegression(proximal='TV', sigma=0.1)
 model.fit(X, y)
 print("scikit-prox solution: {}".format(model.coef_))
 ```
+
+## Documentation
+The documentation is available at https://scikit-prox.readthedocs.io/en/latest/
+
+## License
+This project is licensed under the MIT License - see the LICENSE.md file for details
+
+## Acknowledgments
+This project leans on the pyproximal package borrowing all the proximal operators except for Total Variation which
+is implemented using functions from skimage.
