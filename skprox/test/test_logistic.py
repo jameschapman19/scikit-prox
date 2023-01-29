@@ -1,9 +1,9 @@
 import numpy as np
 
-from skprox.linear_model import RegularisedLinearRegression
+from skprox.linear_model import RegularisedLogisticRegression
 
 
-def test_L0_regression():
+def test_L0_logistic():
     from sklearn.datasets import make_regression
     from sklearn.model_selection import train_test_split
 
@@ -18,7 +18,7 @@ def test_L0_regression():
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=0
     )
-    reg = RegularisedLinearRegression(proximal="L0", sigma=0.1, max_iter=10000)
+    reg = RegularisedLogisticRegression(proximal="L0", sigma=0.1, max_iter=10000)
     reg.fit(x_train, y_train)
     # test L0 has some zero coefficients
     assert np.sum(reg.coef_ == 0) > 0
@@ -48,7 +48,7 @@ def test_L1_regression():
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=0
     )
-    reg = RegularisedLinearRegression(proximal="L1", sigma=0.1, max_iter=10000)
+    reg = RegularisedLogisticRegression(proximal="L1", sigma=0.1, max_iter=10000)
     reg.fit(x_train, y_train)
     # test L1 has some zero coefficients
     assert np.sum(reg.coef_ == 0) > 0
@@ -78,7 +78,7 @@ def test_nuclearball_regression():
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=0
     )
-    reg = RegularisedLinearRegression(proximal="NuclearBall", radius=10, max_iter=10000)
+    reg = RegularisedLogisticRegression(proximal="NuclearBall", radius=10, max_iter=10000)
     reg.fit(x_train, y_train)
 
     # test nuclearball has norm of coefficients about the same as the radius
@@ -108,7 +108,7 @@ def test_gridsearch():
     from sklearn.model_selection import GridSearchCV
 
     reg = GridSearchCV(
-        RegularisedLinearRegression(max_iter=1000),
+        RegularisedLogisticRegression(max_iter=1000),
         param_grid={"proximal": ["L0", "L1"], "sigma": [1e-1,1,10]},
         cv=5,
     )
