@@ -27,7 +27,7 @@ class Dummy:
     def __call__(self, x):
         return 0
 
-    def prox(self, x):
+    def prox(self, x, tau):
         return x
 
 

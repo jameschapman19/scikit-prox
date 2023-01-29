@@ -1,33 +1,32 @@
-import numpy as np
-from sklearn.linear_model._base import _preprocess_data, _rescale_data, LinearRegression
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model._base import _preprocess_data, _rescale_data
+from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.validation import _check_sample_weight
-
+import numpy as np
 from skprox.proximal_operators import _proximal_operators
 
 
-class RegularisedLinearRegression(LinearRegression):
+class RegularisedLogisticRegression(LogisticRegression):
     def __init__(
-        self,
-        fit_intercept=True,
-        copy_X=True,
-        random_state=None,
-        proximal="Dummy",
-        proximal_params=None,
-        sigma=1.0,
-        rho=0.8,
-        radius=1.0,
-        gamma=1.3,
-        delta=1e-10,
-        positive=False,
-        max_iter=1000,
-        tol=1e-9,
-        learning_rate=0.01,
+            self,
+            fit_intercept=True,
+            copy_X=True,
+            random_state=None,
+            proximal="Dummy",
+            proximal_params=None,
+            sigma=1.0,
+            rho=0.8,
+            radius=1.0,
+            gamma=1.3,
+            delta=1e-10,
+            positive=False,
+            max_iter=1000,
+            tol=1e-9,
+            learning_rate=0.01,
             g=None,
             nesterov=False,
     ):
         """
-
-
         Parameters
         ----------
         fit_intercept : bool, optional
@@ -61,39 +60,22 @@ class RegularisedLinearRegression(LinearRegression):
         g : :obj:`np.ndarray`, optional
             Vector to be subtracted. Default is None.
         """
-        super().__init__(fit_intercept=fit_intercept, copy_X=copy_X, positive=positive)
+        super().__init__(fit_intercept=fit_intercept,max_iter=max_iter, tol=tol, random_state=random_state)
         self.proximal = proximal
         self.proximal_params = proximal_params
         self.sigma = sigma
         self.max_iter = max_iter
         self.tol = tol
         self.learning_rate = learning_rate
+        self.g = g
+        self.nesterov = nesterov
         self.rho = rho
         self.radius = radius
         self.gamma = gamma
         self.delta = delta
-        self.g=g
-        self.nesterov=nesterov
-        self.random_state = random_state
-
+        self.positive = positive
+        self.copy_X = copy_X
     def fit(self, X, y, sample_weight=None):
-        """
-        Fit model.
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix} of shape (n_samples, n_features)
-            Training data.
-        y : array-like of shape (n_samples,) or (n_samples, n_targets)
-            Target values. Will be cast to X's dtype if necessary.
-        sample_weight : array-like of shape (n_samples,), default=None
-            Individual weights for each sample.
-               parameter *sample_weight* support to LinearRegression.
-        Returns
-        -------
-        self : object
-            Fitted Estimator.
-        """
         self._validate_params()
 
         # Convert data
@@ -104,6 +86,29 @@ class RegularisedLinearRegression(LinearRegression):
             multi_output=True,
             y_numeric=True,
         )
+        check_classification_targets(y)
+        self.classes_ = np.unique(y)
+        n_classes = len(self.classes_)
+        classes_ = self.classes_
+        if n_classes < 2:
+            raise ValueError(
+                "This solver needs samples of at least 2 classes"
+                " in the data, but the data contains only one"
+                " class: %r"
+                % classes_[0]
+            )
+        if len(self.classes_) == 2:
+            n_classes = 1
+            classes_ = classes_[1:]
+
+        if self.warm_start:
+            warm_start_coef = getattr(self, "coef_", None)
+        else:
+            warm_start_coef = None
+        if warm_start_coef is not None and self.fit_intercept:
+            warm_start_coef = np.append(
+                warm_start_coef, self.intercept_[:, np.newaxis], axis=1
+            )
         sample_weight = _check_sample_weight(
             sample_weight, X, dtype=X.dtype, only_non_negative=True
         )
@@ -128,33 +133,11 @@ class RegularisedLinearRegression(LinearRegression):
         self.proximal = self._get_proximal()
         # optimise by proximal gradient descent
         self.coef_ = self._proximal_gradient_descent(X, y).T
-        self._set_intercept(X_offset, y_offset, X_scale)
+        #ensure self.coef_ is a 2D array
+        if self.coef_.ndim == 1:
+            self.coef_ = self.coef_[np.newaxis,:]
+        self.intercept_ = y_offset - X_offset.dot(self.coef_.T)
         return self
-
-    def _proximal_gradient_descent(self, X, y):
-        self.track=[]
-        n_samples, n_features = X.shape
-        if y.ndim == 1:
-            coef_ = np.zeros((n_features,))
-        else:
-            coef_ = np.zeros((n_features, y.shape[1]))
-        old_coef_ = coef_
-        # proximal gradient descent with a backtracking line search
-        for i in range(self.max_iter):
-            if self.nesterov:
-                v=coef_+((i-1)/(i+2))*(coef_-old_coef_)
-                old_coef_=coef_
-            else:
-                v=coef_
-            grad = X.T @ (X @ v - y) / X.shape[0]
-            coef_ = self.proximal.prox(
-                (v.flatten() - self.learning_rate * grad.flatten()), self.sigma
-            ).reshape(coef_.shape)
-            self.track.append(self._objective(X, y, coef_))
-        return coef_
-
-    def _objective(self, X, y, coef_):
-        return np.linalg.norm(X @ coef_ - y) ** 2 / X.shape[0] + self.proximal(coef_)
 
     def _get_proximal(self):
         if callable(self.proximal):
@@ -173,3 +156,38 @@ class RegularisedLinearRegression(LinearRegression):
                 "delta": self.delta,
             }
         return _proximal_operators(self.proximal, **params)
+
+    def _proximal_gradient_descent(self, X, y):
+        self.track = []
+        n_samples, n_features = X.shape
+        if y.ndim == 1:
+            coef_ = np.zeros((n_features,))
+        else:
+            coef_ = np.zeros((n_features, y.shape[1]))
+        old_coef_ = coef_
+        # proximal gradient descent with a backtracking line search
+        for i in range(self.max_iter):
+            if self.nesterov:
+                v=coef_+((i-1)/(i+2))*(coef_-old_coef_)
+                old_coef_=coef_
+            else:
+                v=coef_
+            # compute gradient
+            grad = self._compute_gradient(X, y, v)
+            coef_ = self.proximal.prox(
+                (v.flatten() - self.learning_rate * grad.flatten()), self.sigma
+            ).reshape(coef_.shape)
+            self.track.append(self._objective(X, y, coef_))
+        return coef_.T
+
+    def _objective(self, X, y, coef_):
+        y_hat = 1. / (1. + np.exp(-np.dot(X, coef_)))  # predicted y by the LR model
+        J = np.mean(-y * np.log2(y_hat) - (1 - y) * np.log2(1 - y_hat))  # the binary cross entropy loss function
+        return J + self.proximal(coef_)
+
+    def _compute_gradient(self, X, y, coef_):
+        y_hat = 1. / (1. + np.exp(-np.dot(X, coef_)))  # predicted y by the LR model
+        return np.dot(y_hat - y,X)/X.shape[0] # the gradient of the loss function
+
+def sigmoid(x):
+    return 1/(1+np.exp(-x))

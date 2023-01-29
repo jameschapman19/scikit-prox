@@ -1,1 +1,2 @@
-from ._base import RegularisedRegression
+from ._base import RegularisedLinearRegression
+from ._logistic import RegularisedLogisticRegression

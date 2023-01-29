@@ -1,6 +1,6 @@
 import numpy as np
 
-from skprox.linear_model import RegularisedRegression
+from skprox.linear_model import RegularisedLinearRegression
 
 
 def test_L0_regression():
@@ -18,7 +18,7 @@ def test_L0_regression():
     x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=0
     )
-    reg = RegularisedRegression(proximal="L0", sigma=0.1, max_iter=10000)
+    reg = RegularisedLinearRegression(proximal="L0", sigma=0.1, max_iter=10000)
     reg.fit(x_train, y_train)
     # test L0 has some zero coefficients
     assert np.sum(reg.coef_ == 0) > 0
