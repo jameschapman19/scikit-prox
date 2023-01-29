@@ -24,7 +24,7 @@ import numpy as np
 from scipy import sparse
 from sklearn.datasets import make_regression
 from sklearn.linear_model import Lasso
-from skprox.linear_model import RegularisedRegression
+from skprox.linear_model import RegularisedLinearRegression
 
 # Generate data
 X, y = make_regression(n_samples=100, n_features=1000, random_state=0, noise=4.0, bias=100.0)
@@ -36,7 +36,7 @@ model.fit(X, y)
 print("scikit-learn solution: {}".format(model.coef_))
 
 # Solve the problem using scikit-prox
-model = RegularisedRegression(proximal='L1', sigma=0.1)
+model = RegularisedLinearRegression(proximal='L1', sigma=0.1)
 model.fit(X, y)
 print("scikit-prox solution: {}".format(model.coef_))
 ```
@@ -49,14 +49,14 @@ minimize 1/2‖Ax − b‖2 + λ‖∇x‖1
 import numpy as np
 from scipy import sparse
 from sklearn.datasets import make_regression
-from skprox.linear_model import RegularisedRegression
+from skprox.linear_model import RegularisedLinearRegression
 
 # Generate data
 X, y = make_regression(n_samples=100, n_features=1000, random_state=0, noise=4.0, bias=100.0)
 X = sparse.csr_matrix(X)
 
 # Solve the problem using scikit-prox
-model = RegularisedRegression(proximal='TV', sigma=0.1)
+model = RegularisedLinearRegression(proximal='TV', sigma=0.1)
 model.fit(X, y)
 print("scikit-prox solution: {}".format(model.coef_))
 ```
@@ -70,8 +70,8 @@ import numpy as np
 from scipy import sparse
 from sklearn.datasets import make_regression
 from sklearn.linear_model import Lasso
-from skprox.linear_model import RegularisedRegression
-from sklearn.linear_model import GridSearchCV
+from skprox.linear_model import RegularisedLinearRegression
+from sklearn.model_selection import GridSearchCV
 
 # Generate data
 X, y = make_regression(n_samples=100, n_features=1000, random_state=0, noise=4.0, bias=100.0)
@@ -84,7 +84,7 @@ grid.fit(X, y)
 print("scikit-learn solution: {}".format(grid.best_estimator_.coef_))
 
 # Solve the problem using scikit-prox
-model = RegularisedRegression(proximal='L1')
+model = RegularisedLinearRegression(proximal='L1')
 grid = GridSearchCV(model, {'sigma': [0.1, 0.2, 0.3]})
 grid.fit(X, y)
 print("scikit-prox solution: {}".format(grid.best_estimator_.coef_))
