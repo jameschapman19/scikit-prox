@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/jameschapman19/scikit-prox/branch/main/graph/badge.svg?token=JHG9VUB0L8)](https://codecov.io/gh/jameschapman19/scikit-prox)
+[![codecov](https://codecov.io/gh/jameschapman19/scikit-prox/branch/main/graph/badge.svg?token=Id6VAqEdoc)](https://codecov.io/gh/jameschapman19/scikit-prox)
 ![Build Status](https://github.com/jameschapman19/scikit-prox/actions/workflows/test.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/scikit-prox/badge/?version=latest)](https://scikit-prox.readthedocs.io/en/latest/?badge=latest)
 [![version](https://img.shields.io/pypi/v/scikit-prox)](https://pypi.org/project/scikit-prox/)
