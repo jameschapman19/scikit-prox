@@ -1,24 +1,23 @@
 import numpy as np
-
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
 from skprox.linear_model import RegularisedLogisticRegression
 
-
-def test_L0_logistic():
-    from sklearn.datasets import make_regression
-    from sklearn.model_selection import train_test_split
-
-    X, y, t = make_regression(
+X, y = make_classification(
         n_samples=100,
         n_features=200,
         n_informative=10,
-        n_targets=5,
         random_state=1,
-        coef=True,
     )
-    x_train, x_test, y_train, y_test = train_test_split(
+
+x_train, x_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=0
     )
-    reg = RegularisedLogisticRegression(proximal="L0", sigma=0.1, max_iter=10000)
+
+def test_L0_logistic():
+
+
+    reg = RegularisedLogisticRegression(proximal="L0", sigma=0.01, max_iter=10000)
     reg.fit(x_train, y_train)
     # test L0 has some zero coefficients
     assert np.sum(reg.coef_ == 0) > 0
@@ -27,28 +26,14 @@ def test_L0_logistic():
     assert np.sum(reg.coef_ != 0) > 0
 
     # test L0 has the same number of coefficients as the number of targets
-    assert reg.coef_.shape[0] == 5
+    assert reg.coef_.shape[0] == 1
 
     # test L0 has the same number of coefficients as the number of features
     assert reg.coef_.shape[1] == 200
 
 
 def test_L1_regression():
-    from sklearn.datasets import make_regression
-    from sklearn.model_selection import train_test_split
-
-    X, y, t = make_regression(
-        n_samples=100,
-        n_features=200,
-        n_informative=10,
-        n_targets=5,
-        random_state=1,
-        coef=True,
-    )
-    x_train, x_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=0
-    )
-    reg = RegularisedLogisticRegression(proximal="L1", sigma=0.1, max_iter=10000)
+    reg = RegularisedLogisticRegression(proximal="L1", sigma=0.01, max_iter=10000)
     reg.fit(x_train, y_train)
     # test L1 has some zero coefficients
     assert np.sum(reg.coef_ == 0) > 0
@@ -57,27 +42,13 @@ def test_L1_regression():
     assert np.sum(reg.coef_ != 0) > 0
 
     # test L1 has the same number of coefficients as the number of targets
-    assert reg.coef_.shape[0] == 5
+    assert reg.coef_.shape[0] == 1
 
     # test L1 has the same number of coefficients as the number of features
     assert reg.coef_.shape[1] == 200
 
 
 def test_nuclearball_regression():
-    from sklearn.datasets import make_regression
-    from sklearn.model_selection import train_test_split
-
-    X, y, t = make_regression(
-        n_samples=100,
-        n_features=200,
-        n_informative=10,
-        n_targets=5,
-        random_state=1,
-        coef=True,
-    )
-    x_train, x_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=0
-    )
     reg = RegularisedLogisticRegression(proximal="NuclearBall", radius=10, max_iter=10000)
     reg.fit(x_train, y_train)
 
@@ -85,26 +56,12 @@ def test_nuclearball_regression():
     assert np.isclose(np.linalg.norm(reg.coef_), 10, atol=0.1)
 
     # test nuclear has the same number of coefficients as the number of targets
-    assert reg.coef_.shape[0] == 5
+    assert reg.coef_.shape[0] == 1
 
     # test nuclear has the same number of coefficients as the number of features
     assert reg.coef_.shape[1] == 200
 
 def test_gridsearch():
-    from sklearn.datasets import make_regression
-    from sklearn.model_selection import train_test_split
-
-    X, y, t = make_regression(
-        n_samples=100,
-        n_features=200,
-        n_informative=10,
-        n_targets=5,
-        random_state=1,
-        coef=True,
-    )
-    x_train, x_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=0
-    )
     from sklearn.model_selection import GridSearchCV
 
     reg = GridSearchCV(
@@ -115,7 +72,7 @@ def test_gridsearch():
     reg.fit(x_train, y_train)
 
     # test gridsearch has the same number of coefficients as the number of targets
-    assert reg.best_estimator_.coef_.shape[0] == 5
+    assert reg.best_estimator_.coef_.shape[0] == 1
 
     # test gridsearch has the same number of coefficients as the number of features
     assert reg.best_estimator_.coef_.shape[1] == 200

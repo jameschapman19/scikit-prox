@@ -126,7 +126,7 @@ class RegularisedLogisticRegression(LogisticRegression):
         n_samples, n_features = X.shape
         if y.ndim == 1:
             self.ndim = 1
-            self.dims = (n_features,)
+            self.dims = (n_features,1)
         else:
             self.ndim = y.shape[1]
             self.dims = (n_features, y.shape[1])
