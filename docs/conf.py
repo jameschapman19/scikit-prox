@@ -15,7 +15,7 @@ release = '0.0.1'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['autoapi.extension']
-
+autoapi_add_toctree_entry = False
 autoapi_dirs = ['../skprox']
 
 templates_path = ['_templates']
