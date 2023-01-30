@@ -11,7 +11,6 @@ Documentation
     install
     examples
 
-
 .. toctree::
    :maxdepth: 1
    :caption: Reference
