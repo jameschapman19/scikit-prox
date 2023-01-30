@@ -10,6 +10,7 @@ Welcome to scikit-prox's documentation!
     install
     examples
 
+
 .. toctree::
    :maxdepth: 1
    :caption: Reference
