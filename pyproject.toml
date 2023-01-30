@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scikit-prox"
-version = "0.0.2"
+version = "0.0.3"
 description = "A package for solving regularised optimisation problems in a scikit-learn style."
 authors = ["jameschapman19 <james.chapman.19@ucl.ac.uk>"]
 readme = "README.md"
