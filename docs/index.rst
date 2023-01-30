@@ -1,21 +1,30 @@
 
-
 Welcome to scikit-prox's documentation!
 =======================================
 
 .. toctree::
-   :maxdepth: 4
-   :caption: Contents:
+   :maxdepth: 3
+   :caption: Usage
 
     intro
-    autoapi/example/index
-    examples
     install
+    examples
+
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Reference
+
+    autoapi/example/index
+
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Developer Info
+
     changelog
     contributing
     license
-
-
 
 
 
