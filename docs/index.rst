@@ -1,9 +1,9 @@
-
 Welcome to scikit-prox's documentation!
 =======================================
 
+
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Usage
 
     intro
@@ -12,20 +12,19 @@ Welcome to scikit-prox's documentation!
 
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Reference
 
     autoapi/example/index
 
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Developer Info
 
     changelog
     contributing
     license
-
 
 
 Indices and tables
