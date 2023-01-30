@@ -13,6 +13,14 @@ Welcome to scikit-prox's documentation!
    intro
    install
 
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference:
+
+   autoapi/skprox/index
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Developer:
