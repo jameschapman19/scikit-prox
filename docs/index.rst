@@ -1,8 +1,10 @@
 Welcome to scikit-prox's documentation!
 =======================================
 
+
 Documentation
 ====================
+
 
 .. toctree::
    :maxdepth: 1
