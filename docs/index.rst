@@ -8,23 +8,6 @@ Welcome to scikit-prox's documentation!
 
     intro
     install
-    examples
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Reference
-
-    autoapi/example/index
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Developer Info
-
-    changelog
-    contributing
-    license
 
 
 Indices and tables
