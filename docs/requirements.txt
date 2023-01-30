@@ -1,3 +1,4 @@
 scikit-learn
 scikit-image
 pyproximal
+sphinx-autoapi
