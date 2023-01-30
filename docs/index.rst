@@ -7,6 +7,7 @@ Documentation
 .. toctree::
    :maxdepth: 1
    :caption: Usage
+
     intro
     install
     examples
@@ -14,12 +15,14 @@ Documentation
 .. toctree::
    :maxdepth: 1
    :caption: Reference
+
     autoapi/example/index
 
 
 .. toctree::
    :maxdepth: 1
    :caption: Developer Info
+
     changelog
     contributing
     license
