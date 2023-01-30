@@ -100,7 +100,7 @@ PROXIMAL_PARAMS = {
     "L0": frozenset(["sigma"]),
     "L0Ball": frozenset(["radius"]),
     "L1": frozenset(["sigma"]),
-    "L1Ball": frozenset(["sigma","g"]),
+    "L1Ball": frozenset(["n", "radius"]),
     "L2": frozenset(["sigma"]),
     "L21": frozenset(["ndim", "sigma"]),
     "L21_plus_L1": frozenset(["sigma", "rho"]),
