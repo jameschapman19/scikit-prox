@@ -1,5 +1,3 @@
-from abc import abstractmethod
-
 from pyproximal import (
     L0,
     L0Ball,
