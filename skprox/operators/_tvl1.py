@@ -16,11 +16,6 @@ class TVL1(ProxOperator):
             x_tol=1e-2,
             max_iter=200,
             check_gap_frequency=10,
-            val_min=None,
-            val_max=None,
-            verbose=False,
-            fista=True,
-            init=None,
     ):
         super().__init__()
 
@@ -30,11 +25,6 @@ class TVL1(ProxOperator):
         self.x_tol = x_tol
         self.max_iter = max_iter
         self.check_gap_frequency = check_gap_frequency
-        self.val_min = val_min
-        self.val_max = val_max
-        self.verbose = verbose
-        self.fista = fista
-        self.init = init
         self.shape = shape
 
     def unmask(self, x):

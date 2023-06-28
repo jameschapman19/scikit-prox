@@ -52,7 +52,7 @@ PROXIMAL_PARAMS = {
     "Log": frozenset(["sigma", "gamma"]),
     "Log1": frozenset(["sigma", "delta"]),
     "Euclidean": frozenset(["sigma"]),
-    "TVL1": frozenset(["sigma", "rho"]),
+    "TVL1": frozenset(["sigma", "shape", "l1_ratio"]),
 }
 
 
