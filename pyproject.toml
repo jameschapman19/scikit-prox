@@ -13,6 +13,7 @@ scikit-image = "^0.19.3"
 pyproximal = "^0.5.0"
 pytest = "^7.2.1"
 numpy = "^1.8.1"
+nilearn = "^0.8.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.12.0"
