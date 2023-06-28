@@ -1,12 +1,14 @@
+import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model._base import _preprocess_data, _rescale_data
 from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.validation import _check_sample_weight
-import numpy as np
-from skprox.proximal_operators import _proximal_operators
+
+from skprox._pgd import _PGDMixin
+from skprox._proximal_operators import _proximal_operators
 
 
-class RegularisedLogisticRegression(LogisticRegression):
+class LogisticRegression(LogisticRegression, _PGDMixin):
     def __init__(
             self,
             fit_intercept=True,
@@ -60,7 +62,7 @@ class RegularisedLogisticRegression(LogisticRegression):
         g : :obj:`np.ndarray`, optional
             Vector to be subtracted. Default is None.
         """
-        super().__init__(fit_intercept=fit_intercept,max_iter=max_iter, tol=tol, random_state=random_state)
+        super().__init__(fit_intercept=fit_intercept, max_iter=max_iter, tol=tol, random_state=random_state)
         self.proximal = proximal
         self.proximal_params = proximal_params
         self.sigma = sigma
@@ -75,6 +77,7 @@ class RegularisedLogisticRegression(LogisticRegression):
         self.delta = delta
         self.positive = positive
         self.copy_X = copy_X
+
     def fit(self, X, y, sample_weight=None):
         self._validate_params()
 
@@ -126,16 +129,21 @@ class RegularisedLogisticRegression(LogisticRegression):
         n_samples, n_features = X.shape
         if y.ndim == 1:
             self.ndim = 1
-            self.dims = (n_features,1)
+            self.dims = (n_features, 1)
         else:
             self.ndim = y.shape[1]
             self.dims = (n_features, y.shape[1])
         self.proximal = self._get_proximal()
+        n_samples, n_features = X.shape
+        if y.ndim == 1:
+            coef_ = np.zeros((n_features,))
+        else:
+            coef_ = np.zeros((n_features, y.shape[1]))
         # optimise by proximal gradient descent
-        self.coef_ = self._proximal_gradient_descent(X, y).T
-        #ensure self.coef_ is a 2D array
+        self.coef_ = self._proximal_gradient_descent(X, y, coef_).T
+        # ensure self.coef_ is a 2D array
         if self.coef_.ndim == 1:
-            self.coef_ = self.coef_[np.newaxis,:]
+            self.coef_ = self.coef_[np.newaxis, :]
         self.intercept_ = y_offset - X_offset.dot(self.coef_.T)
         return self
 
@@ -157,29 +165,6 @@ class RegularisedLogisticRegression(LogisticRegression):
             }
         return _proximal_operators(self.proximal, **params)
 
-    def _proximal_gradient_descent(self, X, y):
-        self.track = []
-        n_samples, n_features = X.shape
-        if y.ndim == 1:
-            coef_ = np.zeros((n_features,))
-        else:
-            coef_ = np.zeros((n_features, y.shape[1]))
-        old_coef_ = coef_
-        # proximal gradient descent with a backtracking line search
-        for i in range(self.max_iter):
-            if self.nesterov:
-                v=coef_+((i-1)/(i+2))*(coef_-old_coef_)
-                old_coef_=coef_
-            else:
-                v=coef_
-            # compute gradient
-            grad = self._compute_gradient(X, y, v)
-            coef_ = self.proximal.prox(
-                (v.flatten() - self.learning_rate * grad.flatten()), self.sigma
-            ).reshape(coef_.shape)
-            self.track.append(self._objective(X, y, coef_))
-        return coef_.T
-
     def _objective(self, X, y, coef_):
         y_hat = 1. / (1. + np.exp(-np.dot(X, coef_)))  # predicted y by the LR model
         J = np.mean(-y * np.log2(y_hat) - (1 - y) * np.log2(1 - y_hat))  # the binary cross entropy loss function
@@ -187,7 +172,8 @@ class RegularisedLogisticRegression(LogisticRegression):
 
     def _compute_gradient(self, X, y, coef_):
         y_hat = 1. / (1. + np.exp(-np.dot(X, coef_)))  # predicted y by the LR model
-        return np.dot(y_hat - y,X)/X.shape[0] # the gradient of the loss function
+        return np.dot(y_hat - y, X) / X.shape[0]  # the gradient of the loss function
+
 
 def sigmoid(x):
-    return 1/(1+np.exp(-x))
+    return 1 / (1 + np.exp(-x))

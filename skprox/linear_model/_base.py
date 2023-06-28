@@ -2,26 +2,26 @@ import numpy as np
 from sklearn.linear_model._base import _preprocess_data, _rescale_data, LinearRegression
 from sklearn.utils.validation import _check_sample_weight
 
-from skprox.proximal_operators import _proximal_operators
+from skprox._pgd import _PGDMixin
 
 
-class RegularisedLinearRegression(LinearRegression):
+class RegularisedLinearRegression(LinearRegression, _PGDMixin):
     def __init__(
-        self,
-        fit_intercept=True,
-        copy_X=True,
-        random_state=None,
-        proximal="Dummy",
-        proximal_params=None,
-        sigma=1.0,
-        rho=0.8,
-        radius=1.0,
-        gamma=1.3,
-        delta=1e-10,
-        positive=False,
-        max_iter=1000,
-        tol=1e-9,
-        learning_rate=0.01,
+            self,
+            fit_intercept=True,
+            copy_X=True,
+            random_state=None,
+            proximal="Dummy",
+            proximal_params=None,
+            sigma=1.0,
+            rho=0.8,
+            radius=1.0,
+            gamma=1.3,
+            delta=1e-10,
+            positive=False,
+            max_iter=1000,
+            tol=1e-9,
+            learning_rate=0.01,
             g=None,
             nesterov=False,
     ):
@@ -72,8 +72,8 @@ class RegularisedLinearRegression(LinearRegression):
         self.radius = radius
         self.gamma = gamma
         self.delta = delta
-        self.g=g
-        self.nesterov=nesterov
+        self.g = g
+        self.nesterov = nesterov
         self.random_state = random_state
 
     def fit(self, X, y, sample_weight=None):
@@ -126,50 +126,18 @@ class RegularisedLinearRegression(LinearRegression):
             self.ndim = y.shape[1]
             self.dims = (n_features, y.shape[1])
         self.proximal = self._get_proximal()
-        # optimise by proximal gradient descent
-        self.coef_ = self._proximal_gradient_descent(X, y).T
-        self._set_intercept(X_offset, y_offset, X_scale)
-        return self
-
-    def _proximal_gradient_descent(self, X, y):
-        self.track=[]
         n_samples, n_features = X.shape
         if y.ndim == 1:
             coef_ = np.zeros((n_features,))
         else:
             coef_ = np.zeros((n_features, y.shape[1]))
-        old_coef_ = coef_
-        # proximal gradient descent with a backtracking line search
-        for i in range(self.max_iter):
-            if self.nesterov:
-                v=coef_+((i-1)/(i+2))*(coef_-old_coef_)
-                old_coef_=coef_
-            else:
-                v=coef_
-            grad = X.T @ (X @ v - y) / X.shape[0]
-            coef_ = self.proximal.prox(
-                (v.flatten() - self.learning_rate * grad.flatten()), self.sigma
-            ).reshape(coef_.shape)
-            self.track.append(self._objective(X, y, coef_))
-        return coef_
+        # optimise by proximal gradient descent
+        self.coef_ = self._proximal_gradient_descent(X, y, coef_)
+        self._set_intercept(X_offset, y_offset, X_scale)
+        return self
+
+    def _compute_gradient(self, X, y, coef_):
+        return 2 * X.T @ (X @ coef_ - y) / X.shape[0]
 
     def _objective(self, X, y, coef_):
         return np.linalg.norm(X @ coef_ - y) ** 2 / X.shape[0] + self.proximal(coef_)
-
-    def _get_proximal(self):
-        if callable(self.proximal):
-            params = self.proximal_params or {}
-        else:
-            params = {
-                "ndim": self.ndim,
-                "sigma": self.sigma,
-                "isotropic": True,
-                "positive": self.positive,
-                "dims": self.dims,
-                "rho": self.rho,
-                "dim": self.dims,
-                "radius": self.radius,
-                "gamma": self.gamma,
-                "delta": self.delta,
-            }
-        return _proximal_operators(self.proximal, **params)

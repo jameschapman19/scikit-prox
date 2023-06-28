@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
+
 from skprox.linear_model import RegularisedLinearRegression
 
 X, y, t = make_regression(
@@ -18,7 +19,7 @@ x_train, x_test, y_train, y_test = train_test_split(
 
 
 def test_L0_logistic():
-    reg = RegularisedLinearRegression(proximal="L0", sigma=0.1, max_iter=10000)
+    reg = RegularisedLinearRegression(proximal="L0", sigma=10, max_iter=10000)
     reg.fit(x_train, y_train)
     # test L0 has some zero coefficients
     assert np.sum(reg.coef_ == 0) > 0
